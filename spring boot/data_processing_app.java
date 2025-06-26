@@ -55,7 +55,7 @@ public class data_processing {
 
             System.out.println("[2] MQTT 브로커에 연결 시도: " + mqttBroker);
             this.mqttClient.connect(options);
-            System.out.println("[3] MQTT 연결 성공 ✅");
+            System.out.println("[3] MQTT 연결 성공 ");
 
 // S3 클라이언트 생성 (환경 변수 기반 인증)
             this.s3Client = S3Client.builder()
@@ -64,7 +64,7 @@ public class data_processing {
                     .build();
 
         } catch (MqttException e) {
-            System.out.println("[X] MQTT 연결 실패 ❌: " + e.getMessage());
+            System.out.println("[X] MQTT 연결 실패 : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -90,7 +90,7 @@ public class data_processing {
 
             System.out.println("[7] MQTT 메시지 발행 중 → 토픽: " + mqttTopic2);
             mqttClient.publish(mqttTopic2, message);
-            System.out.println("[8] MQTT 메시지 발행 완료 ✅");
+            System.out.println("[8] MQTT 메시지 발행 완료 ");
 
             int messageBytes = processed.getBytes(StandardCharsets.UTF_8).length;
             synchronized (buffer) {
@@ -102,7 +102,7 @@ public class data_processing {
             }
 
         } catch (Exception e) {
-            System.out.println("[X] 메시지 처리 중 예외 발생 ❌: " + e.getMessage());
+            System.out.println("[X] 메시지 처리 중 예외 발생 : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -128,7 +128,7 @@ public class data_processing {
                     .key(key)
                     .build();
             s3Client.putObject(req, software.amazon.awssdk.core.sync.RequestBody.fromString(combined));
-            System.out.printf("✅ S3 일괄 업로드 완료: s3://%s/%s (%d 건)%n", bucketName, key, toUpload.size());
+            System.out.printf(" S3 일괄 업로드 완료: s3://%s/%s (%d 건)%n", bucketName, key, toUpload.size());
         } catch (S3Exception e) {
             System.err.println("⚠ S3 일괄 업로드 실패: " + e.getMessage());
         }
@@ -146,7 +146,7 @@ public class data_processing {
         }
         long now = System.currentTimeMillis();
         if (now - lastFlushTime >= FLUSH_INTERVAL_MS) {
-            System.out.println("⏰ 스케줄러 기반 강제 플러시 실행");
+            System.out.println(" 스케줄러 기반 강제 플러시 실행");
             flushBuffer();
         }
     }
