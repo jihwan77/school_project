@@ -1,0 +1,32 @@
+apiVersion: apps.emqx.io/v2beta1
+kind: EMQX
+metadata:
+  name: emqx
+  namespace: {{ .Release.Namespace }}
+spec:
+  image: emqx:5.1
+  coreTemplate:
+    spec:
+      replicas: {{ .Values.core.replicas }}
+      affinity:
+{{ toYaml .Values.core.affinity | indent 8 }}
+      resources:
+{{ toYaml .Values.core.resources | indent 8 }}
+  replicantTemplate:
+    spec:
+      replicas: {{ .Values.replicant.replicas }}
+      affinity:
+{{ toYaml .Values.replicant.affinity | indent 8 }}
+      resources:
+{{ toYaml .Values.replicant.resources | indent 8 }}
+  replicantHPA:
+        enabled: {{ .Values.replicantHPA.enabled }}
+        minReplicas: {{ .Values.replicantHPA.minReplicas }}
+        maxReplicas: {{ .Values.replicantHPA.maxReplicas }}
+        targetCPUUtilizationPercentage: {{ .Values.replicantHPA.targetCPUUtilizationPercentage }}
+  dashboardServiceTemplate:
+    spec:
+{{ toYaml .Values.service.dashboard.spec | indent 6 }}
+  listenersServiceTemplate:
+    spec:
+{{ toYaml .Values.service.listeners.spec | indent 6 }}

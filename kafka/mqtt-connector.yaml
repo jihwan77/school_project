@@ -1,0 +1,17 @@
+# mqtt-connector.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: mqtt-source
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: my-kafka-connect
+spec:
+  tasksMax: 1
+  class: org.apache.camel.kafkaconnector.mqttsource.CamelMqttsourceSourceConnector
+  config:
+    topics: mqtt
+    camel.kamelet.mqtt-source.topic: test
+    camel.kamelet.mqtt-source.brokerUrl: tcp://emqx-listener.mqtt:1883
+    camel.kamelet.mqtt-source.clientId: kafka-connector
+    value.converter: org.apache.kafka.connect.converters.ByteArrayConverter

@@ -1,0 +1,18 @@
+# kafka-values.yaml
+fullnameOverride: my-kafka
+
+extraConfig: |
+  num.partitions=5
+  auto.create.topics.enable=true
+
+controller:
+  replicaCount: 3
+  persistence:
+    enabled: false
+  
+listeners:
+  client:
+    protocol: PLAINTEXT
+
+provisioning:
+  enabled: false

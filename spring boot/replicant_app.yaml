@@ -1,0 +1,48 @@
+# data-processing-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-processing-app
+  namespace: processing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-processing
+  template:
+    metadata:
+      labels:
+        app: data-processing
+    spec:
+      containers:
+      - name: data-processing
+        image: jihwan77/data-kafka-app:3.0 # data-kafka-app:2.0이 정상버전, 3.0발전버전
+        imagePullPolicy: Always
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: AWS_REGION
+        - name: JAVA_TOOL_OPTIONS  # 로그 문제 방지용
+          value: "-Duser.timezone=Asia/Seoul"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "200m"
+            memory: "512Mi"
+        ports:
+        - containerPort: 8080  # 해당 Spring Boot 앱이 사용하는 포트로 변경
+

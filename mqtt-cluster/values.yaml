@@ -1,0 +1,52 @@
+core:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                apps.emqx.io/instance: emqx
+            topologyKey: "kubernetes.io/hostname"
+      
+replicant:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                apps.emqx.io/instance: emqx
+            topologyKey: "kubernetes.io/hostname"
+replicantHPA:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 60
+
+
+
+service:
+  dashboard:
+    spec:
+      type: LoadBalancer
+  listeners:
+    spec:
+      type: LoadBalancer

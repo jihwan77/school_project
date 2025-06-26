@@ -1,0 +1,54 @@
+# kafka-connect.yaml
+#apiVersion: kafka.strimzi.io/v1beta2
+#kind: KafkaConnect
+#metadata:
+#  name: my-kafka-connect
+#  namespace: kafka
+#  annotations:
+#     strimzi.io/use-connector-resources: "true"
+#spec:
+#  replicas: 2
+#  image: jihwan77/kafka-connect-with-camel-mqtt:latest
+#  bootstrapServers: my-kafka.kafka:9092
+#  
+#  config:
+#   config.storage.replication.factor: 1
+#   config.storage.topic: my-connect-configs
+#   group.id: my-connect
+#  key.converter: org.apache.kafka.connect.converters.ByteArrayConverter
+#   offset.storage.replication.factor: 1
+#   offset.storage.topic: my-connect-offsets
+#   status.storage.replication.factor: 1
+#   status.storage.topic: my-connect-status
+#   value.converter: org.apache.kafka.connect.converters.ByteArrayConverter
+   
+   
+# kafka-connect.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: my-kafka-connect
+  namespace: kafka
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  replicas: 2
+  image: jihwan77/kafka-connect-with-camel-mqtt:latest
+  bootstrapServers: my-kafka.kafka:9092
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+  config:
+    config.storage.replication.factor: 1
+    config.storage.topic: my-connect-configs
+    group.id: my-connect
+    key.converter: org.apache.kafka.connect.converters.ByteArrayConverter
+    offset.storage.replication.factor: 1
+    offset.storage.topic: my-connect-offsets
+    status.storage.replication.factor: 1
+    status.storage.topic: my-connect-status
+    value.converter: org.apache.kafka.connect.converters.ByteArrayConverter

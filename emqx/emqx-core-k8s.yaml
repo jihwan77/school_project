@@ -1,0 +1,53 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: emqx-core
+  namespace: mqtt
+  labels:
+    app: emqx
+spec:
+  serviceName: emqx-headless
+  replicas: 2
+  selector:
+    matchLabels:
+      app: emqx
+      role: core
+  template:
+    metadata:
+      labels:
+        app: emqx
+        role: core
+    spec:
+      containers:
+      - name: emqx
+        image: emqx/emqx:5.1
+        ports:
+        - containerPort: 1883
+        - containerPort: 18083
+        env:
+        - name: EMQX_CLUSTER__DISCOVERY_STRATEGY
+          value: k8s
+        - name: EMQX_CLUSTER__K8S__NAMESPACE
+          value: mqtt
+        - name: EMQX_CLUSTER__K8S__SERVICE_NAME
+          value: emqx-headless
+        - name: EMQX_CLUSTER__K8S__ADDRESS_TYPE
+          value: ip
+        - name: EMQX_NODE__COOKIE
+          value: abcdefghijklmn
+        
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: 18083
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "200m"
+            memory: "512Mi"

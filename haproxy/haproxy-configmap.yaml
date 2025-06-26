@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-config
+  namespace: haproxy
+data:
+  haproxy.cfg: |
+    global
+      log stdout format raw daemon
+      maxconn 10000
+
+    defaults
+      log global
+      mode tcp
+      timeout connect 5s
+      timeout client 1h
+      timeout server 1h
+
+    resolvers k8s
+      nameserver kube-dns 10.96.0.10:53
+      resolve_retries 3
+      timeout resolve 5s
+      timeout retry 3s
+      hold valid 10s
+
+    frontend stats
+      bind *:8888
+      mode http
+      stats enable
+      stats uri /stats
+      stats refresh 10s
+
+    backend mqtt_backend
+      mode tcp
+      balance leastconn
+      option tcp-check
+      server-template emqx 10 emqx-headless.mqtt.svc.cluster.local:1883 check resolvers k8s
+      
+    frontend mqtt_servers
+      bind *:1883
+      mode tcp
+      default_backend mqtt_backend
+
