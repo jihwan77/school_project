@@ -60,14 +60,16 @@ Spring Boot Data Processing App
 | Storage                 | AWS S3                                     |
 | Network / Proxy         | HAProxy                                    |
 | CNI                     | Calico                                     |
-| Monitoring              | Kubernetes Monitoring YAML                 |
+| Monitoring              | Prometheus, Grafana                 |
 | Deployment              | Kubernetes Manifest, Helm Chart            |
 
 ---
 
 ## 4. 전체 아키텍처
 
-![image](https://github.com/user-attachments/assets/de42d24e-730b-46ba-8615-ec6bc43b8618)
+![alt text](/picture/image-2.png)
+
+
 
 ```text
 [MQTT Publisher]
@@ -77,7 +79,7 @@ Spring Boot Data Processing App
 [EMQX MQTT Cluster]
       |
       | MQTT Topic: test
-      v
+      v 
 [Kafka Connect]
       |
       | MQTT Source Connector
@@ -440,8 +442,7 @@ CPU 사용률 평균 30%를 기준으로 Pod 수를 1개에서 최대 4개까지
 
 `aws-s3/aws-secret.yaml`은 Spring Boot 애플리케이션에서 AWS S3에 접근하기 위한 인증 정보를 Kubernetes Secret으로 관리하기 위한 파일입니다.
 
-> 주의: 실제 운영 환경에서는 AWS Access Key와 Secret Key를 GitHub에 직접 커밋하지 않아야 합니다.
-> 민감 정보는 Sealed Secret, External Secrets Operator, AWS IAM Role for Service Account, GitHub Secrets 등을 사용해 관리하는 것이 좋습니다.
+
 
 ---
 
@@ -630,7 +631,6 @@ Secret 확인:
 kubectl get secret -n processing
 ```
 
-> 실제 운영 환경에서는 GitHub 저장소에 실제 AWS 인증 정보를 업로드하지 않도록 주의해야 합니다.
 
 ---
 
@@ -714,7 +714,32 @@ s3://<bucket-name>/test/<timestamp>.txt
 
 ---
 
-## 11. 주요 포트
+## 11. Prometheus, Grafana를 통한 로드밸런싱 및 오토 스케일링 확인
+
+테스트 진행 후, Grafana를 통해 확인합니다.
+
+### 11.1. CPU 사용량 확인
+
+![alt text](/picture/image.png)
+
+Pod들의 CPU 사용량 결과, 부하 테스트 시점을 기준으로 HPA에 의해 개수가 증가합니다.
+
+
+
+---
+
+### 11.2 패킷 전송 비율 확인
+
+![alt text](/picture/image-1.png)
+
+Grafana를 통해 Pod들의 전송 받는 패킷 비율을 확인합니다.
+
+
+부하 테스트를 기점으로, 늘어난 Pod로도 패킷이 분산되는 것을 확인합니다.
+
+---
+
+## 12. 주요 포트
 
 | 구성 요소                |    포트 | 설명              |
 | -------------------- | ----: | --------------- |
@@ -726,7 +751,7 @@ s3://<bucket-name>/test/<timestamp>.txt
 
 ---
 
-## 12. 운영 및 확인 명령어
+## 13. 운영 및 확인 명령어
 
 ### 전체 Pod 확인
 
@@ -760,9 +785,9 @@ kubectl logs -n processing deploy/data-processing-app -f
 
 ---
 
-## 13. 트러블슈팅
+## 14. 트러블슈팅
 
-## 13.1 MQTT Connector가 메시지를 가져오지 못하는 경우
+## 14.1 MQTT Connector가 메시지를 가져오지 못하는 경우
 
 확인할 항목:
 
@@ -783,7 +808,7 @@ kubectl get svc -n mqtt
 
 ---
 
-## 13.2 Spring Boot 앱에서 S3 업로드가 실패하는 경우
+## 14.2 Spring Boot 앱에서 S3 업로드가 실패하는 경우
 
 확인할 항목:
 
@@ -805,7 +830,7 @@ kubectl describe secret aws-credentials -n processing
 
 ---
 
-## 13.3 Kafka Connect Pod가 실행되지 않는 경우
+## 14.3 Kafka Connect Pod가 실행되지 않는 경우
 
 확인할 항목:
 
@@ -825,7 +850,7 @@ kubectl logs -n kafka <kafka-connect-pod-name>
 
 ---
 
-## 13.4 EMQX 클러스터가 정상 구성되지 않는 경우
+## 14.4 EMQX 클러스터가 정상 구성되지 않는 경우
 
 확인할 항목:
 
@@ -846,7 +871,7 @@ kubectl get svc -n mqtt
 
 ---
 
-## 13.5 HPA가 동작하지 않는 경우
+## 14.5 HPA가 동작하지 않는 경우
 
 확인할 항목:
 
@@ -867,7 +892,7 @@ kubectl top pods -n processing
 
 ---
 
-## 14. 개선 방향
+## 15. 개선 방향
 
 * CI/CD 파이프라인 추가
 * Dockerfile 및 Spring Boot 빌드 과정 정리
@@ -883,7 +908,7 @@ kubectl top pods -n processing
 
 ---
 
-## 15. 프로젝트를 통해 학습한 내용
+## 16. 프로젝트를 통해 학습한 내용
 
 * Kubernetes Manifest 기반 서비스 배포
 * EMQX MQTT Broker 클러스터 구성
